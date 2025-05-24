@@ -3,56 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle Financeiro</title>
-    <style>
-        body { font-family: sans-serif; margin: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        a.button { display: inline-block; padding: 10px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px; }
-        .receita { color: green; }
-        .despesa { color: red; }
-    </style>
+    <title>Controle Financeiro Doméstico</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Meu Controle Financeiro</h1>
+    <div class="container">
+        <h1>Meu Controle Financeiro</h1>
 
-    <a href="/add" class="button">Adicionar Nova Transação</a>
+        <div class="form-container">
+            <h2>Nova Transação / Editar Transação</h2>
+            <form id="transaction-form">
+                <input type="hidden" id="transaction-id">
 
-    <h2>Transações Recentes</h2>
+                <div class="form-group">
+                    <label for="descricao">Descrição:</label>
+                    <input type="text" id="descricao" required>
+                </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Data</th>
-                <th>Tipo</th>
-                <th>Descrição</th>
-                <th>Categoria</th>
-                <th>Valor (R$)</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for t in transacoes %}
-            <tr>
-                <td>{{ t['data'] }}</td>
-                <td class="{{ t['tipo'] }}">{{ t['tipo'] | capitalize }}</td>
-                <td>{{ t['descricao'] }}</td>
-                <td>{{ t['categoria'] }}</td>
-                <td class="{{ t['tipo'] }}">
-                    {% if t['tipo'] == 'receita' %}
-                        + {{ "%.2f" | format(t['valor']) }}
-                    {% else %}
-                        - {{ "%.2f" | format(t['valor']) }}
-                    {% endif %}
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="5">Nenhuma transação encontrada.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                <div class="form-group">
+                    <label for="valor">Valor (R$):</label>
+                    <input type="number" id="valor" step="0.01" required>
+                </div>
 
+                <div class="form-group">
+                    <label for="data">Data:</label>
+                    <input type="date" id="data" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="tipo">Tipo:</label>
+                    <select id="tipo" required>
+                        <option value="despesa">Despesa</option>
+                        <option value="receita">Receita</option>
+                    </select>
+                </div>
+
+                <div class="form-group editable-dropdown">
+                    <label for="categoria">Categoria:</label>
+                    <select id="categoria"></select>
+                    <button type="button" class="btn-add" data-tipo="categoria">+</button>
+                </div>
+
+                <div class="form-group editable-dropdown">
+                    <label for="conta">Conta:</label>
+                    <select id="conta"></select>
+                    <button type="button" class="btn-add" data-tipo="conta">+</button>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" id="btn-save">Salvar</button>
+                    <button type="button" id="btn-clear">Limpar</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="table-container">
+            <h2>Minhas Transações</h2>
+            <table id="transactions-table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Descrição</th>
+                        <th>Valor (R$)</th>
+                        <th>Tipo</th>
+                        <th>Categoria</th>
+                        <th>Conta</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="transactions-body">
+                    </tbody>
+            </table>
+             <h2>Saldo: <span id="saldo-total">0.00</span></h2>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
